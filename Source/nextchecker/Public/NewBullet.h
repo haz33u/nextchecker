@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "NewBullet.generated.h"
+#include "NewBullet.generated.h" // Этот include должен быть последним
 
 UCLASS()
 class NEXTCHECKER_API ANewBullet : public AActor
