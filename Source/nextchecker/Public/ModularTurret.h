@@ -2,9 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ModuleBase.h"
-#include "Projectile.h"
 #include "ModularTurret.generated.h"
+
+class AProjectile;
 
 UCLASS()
 class NEXTCHECKER_API AModularTurret : public AActor
@@ -20,6 +20,18 @@ protected:
 public:
     virtual void Tick(float DeltaTime) override;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret")
+        float RotationSpeed;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret")
+        TSubclassOf<AProjectile> ProjectileType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret")
+        float FireRate;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret")
+        float DetectionRange;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
         UStaticMeshComponent* BaseMesh;
 
@@ -29,37 +41,13 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
         UStaticMeshComponent* TopMesh;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-        UStaticMeshComponent* BarrelMesh;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-        class UInventoryComponent* InventoryComponent;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Firing")
-        TSubclassOf<AProjectile> ProjectileClass;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret")
-        float FireRate;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret")
-        float DetectionRange;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret")
-        float FiringRange;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret")
-        float RotationSpeed;
+    void UpdateTurretComponents(UStaticMeshComponent* NewBase, UStaticMeshComponent* NewGun, UStaticMeshComponent* NewTop, float NewFireRate, float NewRotationSpeed);
 
 private:
-    void ApplyBaseModule();
-    void ApplyWeaponModule();
-    void ApplyCamModule();
-    void ConfigureTurret();
-    void Fire();
-    AActor* FindTarget();
+    FTimerHandle FireRateTimerHandle;
+    APawn* TargetPawn;
 
-    FTimerHandle FireRateHandle;
-    FBaseModule BaseModule;
-    FWeaponModule WeaponModule;
-    FCamModule CamModule;
+    void Fire();
+    void FindTarget();
+    void RotateTowardsTarget();
 };

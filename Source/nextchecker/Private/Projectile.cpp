@@ -1,23 +1,19 @@
 ﻿#include "Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include "Engine/Engine.h"
 
 AProjectile::AProjectile()
 {
     PrimaryActorTick.bCanEverTick = true;
 
-    MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-    RootComponent = MeshComponent;
+    ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
+    RootComponent = ProjectileMesh;
 
-    MeshComponent->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
-
-    ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-    ProjectileMovementComponent->SetUpdatedComponent(MeshComponent);
-    ProjectileMovementComponent->InitialSpeed = 3000.f;
-    ProjectileMovementComponent->MaxSpeed = 3000.f;
-    ProjectileMovementComponent->bRotationFollowsVelocity = true;
-    ProjectileMovementComponent->bShouldBounce = true;
+    ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
+    ProjectileMovement->InitialSpeed = 3000.f;
+    ProjectileMovement->MaxSpeed = 3000.f;
+    ProjectileMovement->bRotationFollowsVelocity = true; // Ensure rotation follows velocity
 }
 
 void AProjectile::BeginPlay()
@@ -32,14 +28,9 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::FireInDirection(const FVector& ShootDirection)
 {
-    ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
-}
-
-void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-    if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
+    if (ProjectileMovement)
     {
-        UGameplayStatics::ApplyDamage(OtherActor, 10.0f, GetInstigatorController(), this, UDamageType::StaticClass());
-        Destroy();
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Firing in direction: %s"), *ShootDirection.ToString()));
+        ProjectileMovement->Velocity = ShootDirection * ProjectileMovement->InitialSpeed;
     }
 }

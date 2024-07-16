@@ -10,32 +10,12 @@ void UInventoryComponent::BeginPlay()
     Super::BeginPlay();
 }
 
-void UInventoryComponent::AddBaseModule(const FBaseModule& NewModule)
+void UInventoryComponent::AddItem(const FInventoryItemStruct& NewItem)
 {
-    BaseModules.Add(NewModule);
+    Items.Add(NewItem);
 }
 
-void UInventoryComponent::AddWeaponModule(const FWeaponModule& NewModule)
+const TArray<FInventoryItemStruct>& UInventoryComponent::GetItems() const
 {
-    WeaponModules.Add(NewModule);
-}
-
-void UInventoryComponent::AddCamModule(const FCamModule& NewModule)
-{
-    CamModules.Add(NewModule);
-}
-
-FBaseModule UInventoryComponent::GetBaseModule(int32 Index)
-{
-    return BaseModules.IsValidIndex(Index) ? BaseModules[Index] : FBaseModule();
-}
-
-FWeaponModule UInventoryComponent::GetWeaponModule(int32 Index)
-{
-    return WeaponModules.IsValidIndex(Index) ? WeaponModules[Index] : FWeaponModule();
-}
-
-FCamModule UInventoryComponent::GetCamModule(int32 Index)
-{
-    return CamModules.IsValidIndex(Index) ? CamModules[Index] : FCamModule();
+    return Items;
 }

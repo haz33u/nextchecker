@@ -19,13 +19,10 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-        UStaticMeshComponent* MeshComponent;
+        UStaticMeshComponent* ProjectileMesh;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-        class UProjectileMovementComponent* ProjectileMovementComponent;
-
-    UFUNCTION()
-        void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+        class UProjectileMovementComponent* ProjectileMovement;
 
     void FireInDirection(const FVector& ShootDirection);
 };

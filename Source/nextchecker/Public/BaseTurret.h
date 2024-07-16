@@ -1,11 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "GameFramework/Actor.h"
 #include "BaseTurret.generated.h"
 
 UCLASS()
-class NEXTCHECKER_API ABaseTurret : public APawn
+class NEXTCHECKER_API ABaseTurret : public AActor
 {
     GENERATED_BODY()
 
@@ -18,48 +18,36 @@ protected:
 public:
     virtual void Tick(float DeltaTime) override;
 
+protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-        class UStaticMeshComponent* BaseMesh;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-        class UStaticMeshComponent* GunMesh;
+        UStaticMeshComponent* BaseMesh;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-        class UStaticMeshComponent* TopMesh;
+        UStaticMeshComponent* TurretMesh;
 
-    UPROPERTY(EditAnywhere, Category = "Turret")
-        float Health;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+        UStaticMeshComponent* GunMesh;
 
-    UPROPERTY(EditAnywhere, Category = "Turret")
-        float Damage;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+        USceneComponent* MuzzleLocation;
 
-    UPROPERTY(EditAnywhere, Category = "Turret")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+        TSubclassOf<class AProjectile> ProjectileClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
         float FireRate;
 
-    UPROPERTY(EditAnywhere, Category = "Turret")
-        float DetectionRange;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+        float FireRange;
 
-    UPROPERTY(EditAnywhere, Category = "Turret")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
         float RotationSpeed;
 
-    UPROPERTY(EditAnywhere, Category = "Turret")
-        FVector MuzzleOffset;
-
-protected:
-    UPROPERTY(EditDefaultsOnly, Category = "Turret")
-        TSubclassOf<class ANewBullet> BulletClass;
-
     FTimerHandle FireRateTimerHandle;
+    APawn* TargetPawn;
 
-    AActor* ClosestEnemy;
-
-protected:
+    void CheckFireCondition();
+    bool InFireRange();
+    void RotateTurret(FVector LookAtTarget);
     void Fire();
-    void FindTarget();
-    void RotateTowardsTarget();
-    bool IsEnemyInRange(AActor* Enemy);
-
-public:
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-    void SetupTurretParameters();
 };

@@ -1,7 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "MyPlayerController.h"  // Подключаем наш новый класс
 #include "nextcheckerGameMode.generated.h"
 
 UCLASS(minimalapi)
@@ -11,4 +12,7 @@ class ANextcheckerGameMode : public AGameModeBase
 
 public:
     ANextcheckerGameMode();
+
+protected:
+    virtual void BeginPlay() override;
 };

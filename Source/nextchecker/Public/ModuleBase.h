@@ -7,13 +7,13 @@
 UENUM(BlueprintType)
 enum class ERarityLevel : uint8
 {
-    Common UMETA(DisplayName = "Common"),
-    Uncommon UMETA(DisplayName = "Uncommon"),
-    Rare UMETA(DisplayName = "Rare"),
-    Epic UMETA(DisplayName = "Epic"),
-    Legendary UMETA(DisplayName = "Legendary"),
-    Magnificent UMETA(DisplayName = "Magnificent"),
-    Excellent UMETA(DisplayName = "Excellent") // Feature of the game
+    Common,
+    Uncommon,
+    Rare,
+    Epic,
+    Legendary,
+    Magnificent,
+    Excellent
 };
 
 USTRUCT(BlueprintType)
@@ -22,13 +22,13 @@ struct FBaseModule
     GENERATED_BODY()
 
         UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        float Damage = 0.0f;
+        float Damage;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        float Health = 0.0f;
+        float Health;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        float RotationSpeed = 0.0f;
+        float RotationSpeed;
 
     FBaseModule(float InDamage = 0.0f, float InHealth = 0.0f, float InRotationSpeed = 0.0f)
         : Damage(InDamage), Health(InHealth), RotationSpeed(InRotationSpeed) {}
@@ -40,13 +40,13 @@ struct FWeaponModule
     GENERATED_BODY()
 
         UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        float FireRate = 1.0f;
+        float FireRate;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString DamageType = "Physical";
+        FString DamageType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        ERarityLevel Rarity = ERarityLevel::Common;
+        ERarityLevel Rarity;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         TArray<FString> Effects;
@@ -61,13 +61,13 @@ struct FCamModule
     GENERATED_BODY()
 
         UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        float DetectionRange = 1000.0f;
+        float DetectionRange;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        float FiringRange = 1000.0f;
+        float FiringRange;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString TargetType = "Ground"; // Ground, Air, Both
+        FString TargetType;
 
     FCamModule(float InDetectionRange = 1000.0f, float InFiringRange = 1000.0f, FString InTargetType = "Ground")
         : DetectionRange(InDetectionRange), FiringRange(InFiringRange), TargetType(InTargetType) {}

@@ -1,11 +1,8 @@
 ﻿#include "BaseTurret.h"
-#include "NewBullet.h"  
-#include "NewEnemy.h"
 #include "Kismet/GameplayStatics.h"
-#include "Engine/World.h"
 #include "TimerManager.h"
+#include "Projectile.h"
 
-// Конструктор
 ABaseTurret::ABaseTurret()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -13,124 +10,91 @@ ABaseTurret::ABaseTurret()
     BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
     RootComponent = BaseMesh;
 
+    TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
+    TurretMesh->SetupAttachment(BaseMesh);
+
     GunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GunMesh"));
-    GunMesh->SetupAttachment(BaseMesh);
+    GunMesh->SetupAttachment(TurretMesh);
 
-    TopMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TopMesh"));
-    TopMesh->SetupAttachment(GunMesh);
+    MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
+    MuzzleLocation->SetupAttachment(GunMesh);
 
-    Health = 100.f;
-    Damage = 20.f;
-    FireRate = 1.f;
-    DetectionRange = 1000.f;
-    RotationSpeed = 10.f;
-    MuzzleOffset = FVector(100.f, 0.f, 0.f);
-    ClosestEnemy = nullptr;
+    FireRate = 2.0f;
+    FireRange = 1000.0f;
+    RotationSpeed = 10.0f;
 }
 
-// Начало игры
 void ABaseTurret::BeginPlay()
 {
     Super::BeginPlay();
-    GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &ABaseTurret::FindTarget, FireRate, true);
+    GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &ABaseTurret::CheckFireCondition, FireRate, true);
 }
 
-// Обновление каждого кадра
 void ABaseTurret::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    RotateTowardsTarget();
-}
 
-// Настройка компонентов ввода
-void ABaseTurret::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-    Super::SetupPlayerInputComponent(PlayerInputComponent);
-    // Здесь можно добавить привязки действий и осей
-}
-
-// Огонь по цели
-void ABaseTurret::Fire()
-{
-    if (BulletClass && ClosestEnemy)
+    if (TargetPawn && InFireRange())
     {
-        FVector MuzzleLocation = GunMesh->GetComponentLocation() + MuzzleOffset;
-        FRotator MuzzleRotation = GunMesh->GetComponentRotation();
-        UWorld* World = GetWorld();
-        if (World)
-        {
-            ANewBullet* Bullet = World->SpawnActor<ANewBullet>(BulletClass, MuzzleLocation, MuzzleRotation);
-            if (Bullet)
-            {
-                FVector LaunchDirection = MuzzleRotation.Vector();
-                Bullet->FireInDirection(LaunchDirection);
-            }
-        }
+        RotateTurret(TargetPawn->GetActorLocation());
     }
 }
 
-// Поиск цели
-void ABaseTurret::FindTarget()
+void ABaseTurret::CheckFireCondition()
 {
-    TArray<AActor*> FoundActors;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ANewEnemy::StaticClass(), FoundActors);
-
-    AActor* NearestEnemy = nullptr;
-    float MinDistance = DetectionRange;
-
-    for (AActor* Actor : FoundActors)
+    if (TargetPawn && InFireRange())
     {
-        float Distance = FVector::Dist(Actor->GetActorLocation(), GetActorLocation());
-        if (Distance < MinDistance)
-        {
-            MinDistance = Distance;
-            NearestEnemy = Actor;
-        }
-    }
-
-    if (IsEnemyInRange(NearestEnemy))
-    {
-        ClosestEnemy = NearestEnemy;
         Fire();
     }
-}
-
-// Вращение к цели
-void ABaseTurret::RotateTowardsTarget()
-{
-    if (ClosestEnemy)
+    else
     {
-        FVector Direction = ClosestEnemy->GetActorLocation() - GetActorLocation();
-        FRotator TargetRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-        FRotator SmoothRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), RotationSpeed);
-        SetActorRotation(SmoothRotation);
+        TArray<AActor*> EnemyPawns;
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawn::StaticClass(), EnemyPawns);
+
+        float ClosestDistance = FireRange;
+        APawn* ClosestPawn = nullptr;
+
+        for (AActor* Enemy : EnemyPawns)
+        {
+            float DistanceToEnemy = FVector::Dist(GetActorLocation(), Enemy->GetActorLocation());
+            if (DistanceToEnemy < ClosestDistance)
+            {
+                ClosestDistance = DistanceToEnemy;
+                ClosestPawn = Cast<APawn>(Enemy);
+            }
+        }
+
+        TargetPawn = ClosestPawn;
     }
 }
 
-// Проверка, находится ли враг в пределах досягаемости
-bool ABaseTurret::IsEnemyInRange(AActor* Enemy)
+bool ABaseTurret::InFireRange()
 {
-    if (Enemy)
+    if (TargetPawn)
     {
-        float Distance = FVector::Dist(Enemy->GetActorLocation(), GetActorLocation());
-        return Distance <= DetectionRange;
+        float DistanceToTarget = FVector::Dist(GetActorLocation(), TargetPawn->GetActorLocation());
+        return DistanceToTarget <= FireRange;
     }
     return false;
 }
 
-// Настройка параметров турели
-void ABaseTurret::SetupTurretParameters()
+void ABaseTurret::RotateTurret(FVector LookAtTarget)
 {
-    if (BaseMesh)
+    FVector ToTarget = LookAtTarget - TurretMesh->GetComponentLocation();
+    FRotator LookAtRotation = FRotator(0.f, ToTarget.Rotation().Yaw, 0.f);
+    FRotator CurrentRotation = TurretMesh->GetComponentRotation();
+
+    TurretMesh->SetWorldRotation(FMath::RInterpTo(CurrentRotation, LookAtRotation, GetWorld()->GetDeltaSeconds(), RotationSpeed));
+}
+
+void ABaseTurret::Fire()
+{
+    if (ProjectileClass)
     {
-        Health = 100.f;
-    }
-    if (GunMesh)
-    {
-        FireRate = 1.f;
-    }
-    if (TopMesh)
-    {
-        RotationSpeed = 10.f;
+        FVector SpawnLocation = MuzzleLocation->GetComponentLocation();
+        FRotator SpawnRotation = MuzzleLocation->GetComponentRotation();
+        AProjectile* TempProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+
+        TempProjectile->SetOwner(this);
     }
 }

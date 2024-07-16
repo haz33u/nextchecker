@@ -4,7 +4,6 @@
 AModuleBase::AModuleBase()
 {
     PrimaryActorTick.bCanEverTick = true;
-
     MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
     RootComponent = MeshComponent;
 }
