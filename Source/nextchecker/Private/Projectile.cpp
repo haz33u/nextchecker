@@ -1,7 +1,6 @@
 ﻿#include "Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Engine/Engine.h"
 
 AProjectile::AProjectile()
 {
@@ -13,7 +12,8 @@ AProjectile::AProjectile()
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
     ProjectileMovement->InitialSpeed = 3000.f;
     ProjectileMovement->MaxSpeed = 3000.f;
-    ProjectileMovement->bRotationFollowsVelocity = true; // Ensure rotation follows velocity
+    ProjectileMovement->bRotationFollowsVelocity = true;
+    ProjectileMovement->bShouldBounce = true;
 }
 
 void AProjectile::BeginPlay()
@@ -28,9 +28,5 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::FireInDirection(const FVector& ShootDirection)
 {
-    if (ProjectileMovement)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Firing in direction: %s"), *ShootDirection.ToString()));
-        ProjectileMovement->Velocity = ShootDirection * ProjectileMovement->InitialSpeed;
-    }
+    ProjectileMovement->Velocity = ShootDirection * ProjectileMovement->InitialSpeed;
 }

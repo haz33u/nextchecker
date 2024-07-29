@@ -1,4 +1,5 @@
 ﻿#include "InventoryComponent.h"
+#include "InventoryItemStruct.h" // Убедитесь, что этот include добавлен
 
 UInventoryComponent::UInventoryComponent()
 {

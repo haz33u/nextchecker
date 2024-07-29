@@ -3,9 +3,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
-#include "Blueprint/UserWidget.h"
-#include "InventoryComponent.h"
-#include "InventoryItemStruct.h"
 #include "nextcheckerCharacter.generated.h"
 
 UCLASS(config = Game)
@@ -35,20 +32,11 @@ class AnextcheckerCharacter : public ACharacter
         class UInputAction* OpenInventoryAction;
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-        UInventoryComponent* InventoryComponent;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-        TSubclassOf<UUserWidget> InventoryWidgetClass;
-
-    UPROPERTY(BlueprintReadWrite, Category = "UI")
-        UUserWidget* InventoryWidgetInstance;
-
     AnextcheckerCharacter();
 
 protected:
     virtual void BeginPlay() override;
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; // Добавляем это объявление
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
     void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
@@ -57,7 +45,4 @@ protected:
 public:
     FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-    UFUNCTION(BlueprintCallable, Category = "Inventory")
-        void AddItemToInventory(const FInventoryItemStruct& NewItem);
 };

@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "InventoryItemStruct.h"
+#include "InventoryItemStruct.h" // Убедитесь, что этот include добавлен
 #include "InventoryComponent.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))

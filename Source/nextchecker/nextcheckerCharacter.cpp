@@ -1,6 +1,6 @@
 ﻿#include "nextcheckerCharacter.h"
 #include "Blueprint/UserWidget.h"
-#include "ModularTurret.h"
+#include "ModularTurret2.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -36,8 +36,6 @@ AnextcheckerCharacter::AnextcheckerCharacter()
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
     FollowCamera->bUsePawnControlRotation = false;
-
-    InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
 
 void AnextcheckerCharacter::BeginPlay()
@@ -97,41 +95,5 @@ void AnextcheckerCharacter::Look(const FInputActionValue& Value)
 
 void AnextcheckerCharacter::OpenInventory()
 {
-    if (InventoryWidgetClass && !InventoryWidgetInstance)
-    {
-        InventoryWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), InventoryWidgetClass);
-        if (InventoryWidgetInstance)
-        {
-            InventoryWidgetInstance->AddToViewport();
-            APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-            if (PlayerController)
-            {
-                PlayerController->bShowMouseCursor = true;
-                FInputModeUIOnly InputModeData;
-                InputModeData.SetWidgetToFocus(InventoryWidgetInstance->TakeWidget());
-                InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-                PlayerController->SetInputMode(InputModeData);
-            }
-        }
-    }
-    else if (InventoryWidgetInstance)
-    {
-        InventoryWidgetInstance->RemoveFromParent();
-        InventoryWidgetInstance = nullptr;
-        APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-        if (PlayerController)
-        {
-            PlayerController->bShowMouseCursor = false;
-            FInputModeGameOnly InputModeData;
-            PlayerController->SetInputMode(InputModeData);
-        }
-    }
-}
-
-void AnextcheckerCharacter::AddItemToInventory(const FInventoryItemStruct& NewItem)
-{
-    if (InventoryComponent)
-    {
-        InventoryComponent->AddItem(NewItem);
-    }
+    // Здесь будет код для открытия нового инвентаря из плагина
 }
