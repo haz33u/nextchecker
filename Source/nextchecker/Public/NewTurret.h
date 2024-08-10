@@ -27,7 +27,7 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
         class UStaticMeshComponent* TopMesh;
 
-    UPROPERTY(EditAnywhere, Category = "Turret")
+        UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
         float Health;
 
     UPROPERTY(EditAnywhere, Category = "Turret")
@@ -62,4 +62,7 @@ protected:
 public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
     void SetupTurretParameters();
+
+    UFUNCTION(BlueprintCallable, Category = "Combat")
+    void NewTakeDamage(float RecievedDamage);
 };

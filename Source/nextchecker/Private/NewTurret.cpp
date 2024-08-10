@@ -117,3 +117,16 @@ bool ANewTurret::IsEnemyInRange(AActor* Enemy)
     }
     return false;
 }
+
+void ANewTurret::NewTakeDamage(float RecievedDamage)
+{
+    // Вычитаем урон из Health
+    Health -= Damage;
+
+    // Убедитесь, что Health не опускается ниже 0
+    if (Health < 0.0f)
+    {
+        Health = 0.0f;
+        // Здесь можно добавить логику для уничтожения объекта или другого поведения при смерти
+    }
+}
