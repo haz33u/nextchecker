@@ -1,0 +1,13 @@
+# UE5 Gameplay Prototype & Steamworks Integration
+
+A research project developed in Unreal Engine 5 to explore C++ game architecture and external SDK integration.
+
+## Key Features
+- **Steamworks SDK Integration:** Implemented basic subsystem for Lobby management and Achievements.
+- **Custom C++ AI:** Enemy logic utilizing Behavior Trees and custom C++ nodes (to fix Blueprint performance bottlenecks).
+- **Debugging Showcase:** Resolved complex memory corruption issues during Hot Reloads.
+
+## Tech Stack
+- C++ 17
+- Unreal Engine 5.x
+- Steamworks SDK
